@@ -6,13 +6,14 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.reddittop.usecase.GetAccessTokenUseCase
+import com.example.reddittop.usecase.GetListItemsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application){
 
-    fun getInfo(accessTokenUseCase: GetAccessTokenUseCase) {
+    fun getInfo(accessTokenUseCase: GetAccessTokenUseCase, getListItemsUseCase: GetListItemsUseCase) {
 
         val context: Context = getApplication()
         val sharedPref = context.getSharedPreferences("com.example.reddittop.MY_PREF", Context.MODE_PRIVATE)
@@ -22,16 +23,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
             if (tokenSaved != null) {
                 if (tokenSaved.isEmpty()){
                     Log.d("OVM", "TOKEN NO SAVED YET.")
-                    getRemoteTokenRequest(accessTokenUseCase)
+                    getRemoteTokenRequest(accessTokenUseCase, getListItemsUseCase)
                 }else{
                     Log.d("OVM", "TOKEN FROM PREF -> $tokenSaved")
-                    getListItems()
+                    getListItems(getListItemsUseCase, tokenSaved)
                 }
             }
         }
     }
 
-    private suspend fun getRemoteTokenRequest(accessTokenUseCase: GetAccessTokenUseCase){
+    private suspend fun getRemoteTokenRequest(accessTokenUseCase: GetAccessTokenUseCase, getListItemsUseCase: GetListItemsUseCase){
         accessTokenUseCase.getToken().collect {
             val context: Context = getApplication()
             val sharedPref = context.getSharedPreferences("com.example.reddittop.MY_PREF", Context.MODE_PRIVATE)
@@ -39,11 +40,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
                 putString("TOKEN_VALID", it)
                 apply()
             }
-            getListItems()
+            getListItems(getListItemsUseCase, it)
         }
     }
 
-    private suspend fun getListItems(){
+    private fun getListItems(getListItemsUseCase: GetListItemsUseCase, token: String){
+        viewModelScope.launch {
+            getListItemsUseCase.getListItems(token)
+        }
     }
 
 }

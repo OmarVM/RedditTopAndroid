@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.reddittop.BaseApplication
 import com.example.reddittop.R
 import com.example.reddittop.usecase.GetAccessTokenUseCase
+import com.example.reddittop.usecase.GetListItemsUseCase
 import com.example.reddittop.viewmodel.MainViewModel
 import javax.inject.Inject
 
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var getAccessTokenUseCase: GetAccessTokenUseCase
+    @Inject
+    lateinit var  getListItemsUseCase: GetListItemsUseCase
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -21,6 +24,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         BaseApplication.getAppComponent().inject(this)
 
-        viewModel.getInfo(getAccessTokenUseCase)
+        viewModel.getInfo(getAccessTokenUseCase, getListItemsUseCase)
     }
 }

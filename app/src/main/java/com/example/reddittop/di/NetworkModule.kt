@@ -8,17 +8,25 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
 
     @Provides
-    fun getRetrofitInstanceToken(okHttpClient: OkHttpClient): RequestTokenService {
+    fun provideGsonConverterFactory(): GsonConverterFactory {
+        return GsonConverterFactory.create()
+    }
+
+    //Token Remote
+
+    @Provides
+    fun getRetrofitInstanceToken(okHttpClient: OkHttpClient, gsonConverterFactory: GsonConverterFactory): RequestTokenService {
         return Retrofit.Builder()
             .baseUrl(ConstantsServer.URL_BASE)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(gsonConverterFactory)
             .build().create(RequestTokenService::class.java)
     }
 
@@ -30,5 +38,16 @@ class NetworkModule {
     @Provides
     fun getOkHttpClient(interceptor: BasicAuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(interceptor).build()
+    }
+
+    //Items Remote
+
+    @Provides
+    @Named("ITEMS_LIST_RETRO")
+    fun provideRetrofitInstance(gsonConverterFactory: GsonConverterFactory): Retrofit.Builder {
+        return Retrofit.Builder()
+                .baseUrl(ConstantsServer.URL_BASE_OAUTH)
+                .addConverterFactory(gsonConverterFactory)
+
     }
 }
