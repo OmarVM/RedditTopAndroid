@@ -1,40 +1,26 @@
 package com.example.reddittop.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.example.reddittop.BaseApplication
 import com.example.reddittop.R
-import com.example.reddittop.data.network.ConstantsServer
-import com.example.reddittop.data.network.token.RequestTokenService
-import kotlinx.coroutines.*
-import retrofit2.HttpException
-import java.util.*
+import com.example.reddittop.usecase.GetAccessTokenUseCase
+import com.example.reddittop.viewmodel.MainViewModel
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var serviceRemote: RequestTokenService
+    lateinit var getAccessTokenUseCase: GetAccessTokenUseCase
+
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         BaseApplication.getAppComponent().inject(this)
 
-        lifecycleScope.launch {
-            val userId = UUID.randomUUID().toString()
-            try {
-                val service = serviceRemote.requestToken(ConstantsServer.VALUE_GRANT_TYPE, userId)
-                service.let {
-                    Log.d("OVM", "Token -> ${it.access_token}")
-                }
-            }catch (e: HttpException){
-                Log.e("OVM", "Error API -> ${e.response()}")
-            }
-        }
-
+        viewModel.getInfo(getAccessTokenUseCase)
     }
 }
