@@ -12,14 +12,14 @@ import javax.inject.Inject
 
 class GetListItemsUseCase @Inject constructor(private val retrofitItemsInstance: Retrofit.Builder) {
 
-    suspend fun getListItems(token: String) = flow {
+    suspend fun getListItems(token: String, after: String, before: String) = flow {
         val mService = setListService(token)
         try {
-            val result = mService.requestListItems(ConstantsServer.VALUE_TIME_YEAR,"", "", ConstantsServer.VALUE_LIMIT)
+            val result = mService.requestListItems(ConstantsServer.VALUE_TIME_YEAR,after, before, ConstantsServer.VALUE_LIMIT)
             result.let {
                 val mListTop = it.data.children
                 Log.d("OVM", "LIST API -> ${mListTop.size}")
-                emit(mListTop)
+                emit(it.data)
             }
         }catch (e: HttpException){
             Log.e("OVM", "Error LIST API -> ${e.response()}")

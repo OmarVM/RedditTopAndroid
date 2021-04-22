@@ -17,10 +17,18 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
         this.mIUInteractionsListener = mIUInteractionsListener
     }
 
-    fun updateList(newList: List<ChildrenRequest>){
-        mList.clear()
-        mList.addAll(newList)
-        notifyDataSetChanged()
+    fun updateList(newList: ArrayList<ChildrenRequest>, paginationStatus: Boolean){
+        if (paginationStatus){
+            mList.addAll(newList)
+            mIUInteractionsListener.completedPaginationOp()
+            mIUInteractionsListener.dataSetChanged(mList)
+            notifyDataSetChanged()
+        }else{
+            val auxList = newList.clone() as ArrayList<ChildrenRequest>
+            mList.clear()
+            mList.addAll(auxList)
+            notifyDataSetChanged()
+        }
     }
 
     inner class PostHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -55,6 +63,6 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
 
     override fun onSwipedItem(position: Int) {
         mList.remove(mList[position])
-        mIUInteractionsListener.dataSetChanged(mList.clone() as List<ChildrenRequest>)
+        mIUInteractionsListener.dataSetChanged(mList)
     }
 }

@@ -20,7 +20,7 @@ object ConstantsServer {
     const val KEY_AFTER = "after"
     const val KEY_BEFORE = "before"
     const val KEY_LIMIT = "limit"
-    const val VALUE_LIMIT = 20
+    const val VALUE_LIMIT = 10
 
     const val VALUE_HEADER_USER_AGENT = ""
 }

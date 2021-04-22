@@ -9,10 +9,31 @@
     android:showDividers="middle"
     tools:context=".view.MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main_list"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_rv_main"
         android:layout_width="250dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_main_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ProgressBar
+                android:id="@+id/m_progress_new_request"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minWidth="50dp"
+                android:minHeight="50dp"
+                android:visibility="invisible"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/post_detail_container"

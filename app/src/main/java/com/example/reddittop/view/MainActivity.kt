@@ -1,7 +1,9 @@
 package com.example.reddittop.view
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -9,6 +11,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
         val emptyView: LinearLayout = findViewById(R.id.ll_empty_view)
         val mRecyclerViewMain: RecyclerView = findViewById(R.id.rv_main_list)
         val loading: ProgressBar = findViewById(R.id.m_progress_circular)
+        val loadingNewRequest: ProgressBar = findViewById(R.id.m_progress_new_request)
 
         mRecyclerViewMain.setHasFixedSize(false)
         mAdapter.setOnClickListener(this)
@@ -59,16 +63,26 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
         val mItemTouchHelper = ItemTouchHelper(ItemTouchHelperSwipe(mAdapter, applicationContext))
         mItemTouchHelper.attachToRecyclerView(mRecyclerViewMain)
 
-        viewModel.getInfo()
+        viewModel.getInfo(false)
         viewModel.mListTop.observe(this, {
+            loading.visibility = View.GONE
+            loadingNewRequest.visibility = View.GONE
             if (it.isNotEmpty()){
                 mRecyclerViewMain.visibility = View.VISIBLE
-                mAdapter.updateList(it)
-                loading.visibility = View.GONE
+                mAdapter.updateList(it as ArrayList<ChildrenRequest>, viewModel.getPaginationStatus())
             }else{
                 mRecyclerViewMain.visibility = View.GONE
                 emptyView.visibility = View.VISIBLE
-                loading.visibility = View.GONE
+            }
+        })
+
+        //Scroll Listener
+        val scrollListener: NestedScrollView = findViewById(R.id.scroll_rv_main)
+        scrollListener.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY == v.getChildAt(0).measuredHeight - v.measuredHeight){
+                loadingNewRequest.visibility = View.VISIBLE
+                viewModel.allowRequest(true)
+                viewModel.getInfo(true)
             }
         })
     }
@@ -99,6 +113,10 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
 
     override fun dataSetChanged(newList: List<ChildrenRequest>) {
         viewModel.updateLiveDataList(newList)
+    }
+
+    override fun completedPaginationOp() {
+        viewModel.completedPaginationOp()
     }
 
     private fun dismissAllContent(){
