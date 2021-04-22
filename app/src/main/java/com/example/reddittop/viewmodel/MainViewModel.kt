@@ -3,10 +3,7 @@ package com.example.reddittop.viewmodel
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.reddittop.data.model.listitems.ChildrenRequest
 import com.example.reddittop.usecase.GetAccessTokenUseCase
 import com.example.reddittop.usecase.GetListItemsUseCase
@@ -18,10 +15,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
 
     private val _mListTop = MutableLiveData<List<ChildrenRequest>>()
     val mListTop: LiveData<List<ChildrenRequest>> = _mListTop
+    private var dataAvailable = false
 
+    private var mAccessTokenUC: GetAccessTokenUseCase? = null
+    private var mGetListItemsUC: GetListItemsUseCase? = null
 
-    fun getInfo(accessTokenUseCase: GetAccessTokenUseCase, getListItemsUseCase: GetListItemsUseCase) {
+    fun setDependencies(accessTokenUseCase: GetAccessTokenUseCase, getListItemsUseCase: GetListItemsUseCase){
+        mAccessTokenUC = accessTokenUseCase
+        mGetListItemsUC = getListItemsUseCase
+    }
 
+    fun getInfo() {
         val context: Context = getApplication()
         val sharedPref = context.getSharedPreferences("com.example.reddittop.MY_PREF", Context.MODE_PRIVATE)
 
@@ -30,33 +34,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
             if (tokenSaved != null) {
                 if (tokenSaved.isEmpty()){
                     Log.d("OVM", "TOKEN NO SAVED YET.")
-                    getRemoteTokenRequest(accessTokenUseCase, getListItemsUseCase)
+                    getRemoteTokenRequest()
                 }else{
                     Log.d("OVM", "TOKEN FROM PREF -> $tokenSaved")
-                    getListItems(getListItemsUseCase, tokenSaved)
+                    getListItems(tokenSaved)
                 }
             }
         }
     }
 
-    private suspend fun getRemoteTokenRequest(accessTokenUseCase: GetAccessTokenUseCase, getListItemsUseCase: GetListItemsUseCase){
-        accessTokenUseCase.getToken().collect {
+    private suspend fun getRemoteTokenRequest(){
+        mAccessTokenUC?.getToken()?.collect {
             val context: Context = getApplication()
             val sharedPref = context.getSharedPreferences("com.example.reddittop.MY_PREF", Context.MODE_PRIVATE)
             with(sharedPref.edit()){
                 putString("TOKEN_VALID", it)
                 apply()
             }
-            getListItems(getListItemsUseCase, it)
+            getListItems( it)
         }
     }
 
-    private fun getListItems(getListItemsUseCase: GetListItemsUseCase, token: String){
-        viewModelScope.launch {
-            getListItemsUseCase.getListItems(token).collect {
-                _mListTop.postValue(it)
+    private fun getListItems(token: String) {
+        if (!dataAvailable){
+            viewModelScope.launch {
+                mGetListItemsUC?.getListItems(token)?.collect {
+                    if (it.isNotEmpty()) {
+                        _mListTop.postValue(it)
+                        dataAvailable = true
+                    }
+                }
             }
         }
     }
 
+    fun updateLiveDataList(mList : List<ChildrenRequest>){
+        _mListTop.postValue(mList)
+    }
 }

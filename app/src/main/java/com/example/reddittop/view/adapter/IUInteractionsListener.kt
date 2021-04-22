@@ -2,6 +2,7 @@ package com.example.reddittop.view.adapter
 
 import com.example.reddittop.data.model.listitems.ChildrenRequest
 
-interface IOnClickListener {
+interface IUInteractionsListener {
     fun onClick(item: ChildrenRequest)
+    fun dataSetChanged(newList: List<ChildrenRequest>)
 }

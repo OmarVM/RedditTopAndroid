@@ -7,13 +7,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.reddittop.R
 import com.example.reddittop.data.model.listitems.ChildrenRequest
+import com.example.reddittop.view.adapter.swipeaction.ItemTouchHelperSwipe
 
-class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<PostAdapter.PostHolder>(){
+class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<PostAdapter.PostHolder>(), ItemTouchHelperSwipe.CallbackOnSwipeAction{
 
-    private lateinit var mOnClickListener: IOnClickListener
+    private lateinit var mIUInteractionsListener: IUInteractionsListener
 
-    fun setOnClickListener(mIOnClickListener: IOnClickListener){
-        mOnClickListener = mIOnClickListener
+    fun setOnClickListener(mIUInteractionsListener: IUInteractionsListener){
+        this.mIUInteractionsListener = mIUInteractionsListener
     }
 
     fun updateList(newList: List<ChildrenRequest>){
@@ -43,12 +44,17 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
 
         with(holder.itemView){
             this.setOnClickListener {
-                mOnClickListener.onClick(mPost)
+                mIUInteractionsListener.onClick(mPost)
             }
         }
     }
 
     override fun getItemCount(): Int {
         return mList.size
+    }
+
+    override fun onSwipedItem(position: Int) {
+        mList.remove(mList[position])
+        mIUInteractionsListener.dataSetChanged(mList.clone() as List<ChildrenRequest>)
     }
 }
