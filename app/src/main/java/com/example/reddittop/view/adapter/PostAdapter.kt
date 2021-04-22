@@ -12,6 +12,10 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
 
     private lateinit var mOnClickListener: IOnClickListener
 
+    fun setOnClickListener(mIOnClickListener: IOnClickListener){
+        mOnClickListener = mIOnClickListener
+    }
+
     fun updateList(newList: List<ChildrenRequest>){
         mList.clear()
         mList.addAll(newList)
@@ -36,6 +40,12 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
         holder.userName.text = name
         val commentString = holder.itemView.context.getString(R.string.comments_post_full, mPost.data.num_comments.toString())
         holder.comments.text = commentString
+
+        with(holder.itemView){
+            this.setOnClickListener {
+                mOnClickListener.onClick(mPost)
+            }
+        }
     }
 
     override fun getItemCount(): Int {

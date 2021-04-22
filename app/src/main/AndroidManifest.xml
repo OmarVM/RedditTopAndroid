@@ -19,6 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.PostDetailActivity"
+            android:parentActivityName=".view.MainActivity"
+            android:theme="@style/Theme.RedditTop.NoActionBar">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".view.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>
