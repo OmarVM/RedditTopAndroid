@@ -3,6 +3,7 @@
     <string name="ph_title_post">special effects makeup 4th degree burn 🔥</string>
     <string name="ph_user_name">t2_6xps34v1</string>
     <string name="comments_post_full">|   %1$s Comments</string>
+    <string name="str_time_ago_day">%1$s days ago</string>
     <string name="txt_dismiss_all">Dismiss All</string>
     <string name="txt_empty_content">There is not content to show.</string>
 </resources>
