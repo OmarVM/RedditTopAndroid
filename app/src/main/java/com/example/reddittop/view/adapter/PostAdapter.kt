@@ -3,11 +3,13 @@ package com.example.reddittop.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.reddittop.R
 import com.example.reddittop.data.model.listitems.ChildrenRequest
 import com.example.reddittop.view.adapter.swipeaction.ItemTouchHelperSwipe
+import com.squareup.picasso.Picasso
 
 class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<PostAdapter.PostHolder>(), ItemTouchHelperSwipe.CallbackOnSwipeAction{
 
@@ -35,6 +37,7 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
         val title: TextView = itemView.findViewById(R.id.title_post)
         val userName: TextView = itemView.findViewById(R.id.user_name)
         val comments: TextView = itemView.findViewById(R.id.comments_post)
+        val img_post: ImageView = itemView.findViewById(R.id.image_row_post)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostHolder {
@@ -49,6 +52,17 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
         holder.userName.text = name
         val commentString = holder.itemView.context.getString(R.string.comments_post_full, mPost.data.num_comments.toString())
         holder.comments.text = commentString
+
+        if (mPost.data.thumbnail.contains("https")){
+            Picasso.get().load(mPost.data.thumbnail).into(holder.img_post)
+
+            with(holder.img_post){
+                this.setOnClickListener {
+                    mIUInteractionsListener.onClickImg(mPost.data.thumbnail)
+                }
+            }
+        }
+
 
         with(holder.itemView){
             this.setOnClickListener {

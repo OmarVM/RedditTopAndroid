@@ -6,8 +6,10 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.reddittop.data.model.listitems.ChildrenRequest
+import com.example.reddittop.data.model.listitems.DataTopRequest
 import com.example.reddittop.usecase.GetAccessTokenUseCase
 import com.example.reddittop.usecase.GetListItemsUseCase
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -75,7 +77,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
                     if (it.children.isNotEmpty()) {
                         afterValue = it.after
                         beforeValue = it.before
-                        _mListTop.postValue(it.children)
+                        _mListTop.postValue(setThumbnailIntoModel(it))
 
                         allowRequest = false
                         someRequestWorking = false
@@ -86,6 +88,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
             Log.d("OVM", "Request blocked...")
         }
     }
+
+    private fun setThumbnailIntoModel(itemsService: DataTopRequest): List<ChildrenRequest> {
+
+        itemsService.children.forEach {
+            if (!it.data.media_metadata.isNullOrEmpty()){
+                val valuesList = it.data.media_metadata?.values
+                val urlService = valuesList.elementAt(0).p[0].u
+                val urlFinal = urlService.replace("amp;", "")
+                it.data.thumbnail = urlFinal
+            }
+        }
+        return itemsService.children
+    }
+
 
     fun updateLiveDataList(mList : List<ChildrenRequest>){
         viewModelScope.launch(Dispatchers.Main) {

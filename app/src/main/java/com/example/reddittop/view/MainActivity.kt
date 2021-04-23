@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
                 arguments = Bundle().apply {
                     putString(PostDetailFragment.ARG_POST_TITLE, item.data.title)
                     putString(PostDetailFragment.ARG_POST_AUTHOR, item.data.author_fullname)
-                    putString(PostDetailFragment.ARG_POST_IMG, "")
+                    putString(PostDetailFragment.ARG_POST_IMG, item.data.thumbnail)
                 }
             }
 
@@ -105,10 +105,14 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
             val intent = Intent(this, PostDetailActivity::class.java).apply {
                 putExtra(PostDetailFragment.ARG_POST_TITLE, item.data.title)
                 putExtra(PostDetailFragment.ARG_POST_AUTHOR, item.data.author_fullname)
-                putExtra(PostDetailFragment.ARG_POST_IMG, "")
+                putExtra(PostDetailFragment.ARG_POST_IMG, item.data.thumbnail)
             }
             startActivity(intent)
         }
+    }
+
+    override fun onClickImg(url: String) {
+        Log.d("OVM", "Click on IMG $url")
     }
 
     override fun dataSetChanged(newList: List<ChildrenRequest>) {

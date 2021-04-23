@@ -6,4 +6,5 @@ interface IUInteractionsListener {
     fun onClick(item: ChildrenRequest)
     fun dataSetChanged(newList: List<ChildrenRequest>)
     fun completedPaginationOp()
+    fun onClickImg(url: String)
 }

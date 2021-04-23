@@ -4,5 +4,8 @@ data class PostItem(
         val author_fullname: String?,
         val title : String,
         val clicked: Boolean,
-        val num_comments: Int
+        val num_comments: Int,
+        val media_metadata: HashMap<String,DataImages>?,
+        val gallery_data: ItemsGallery,
+        var thumbnail: String
 )
