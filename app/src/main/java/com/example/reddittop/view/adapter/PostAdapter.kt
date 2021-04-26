@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.reddittop.R
 import com.example.reddittop.data.model.listitems.ChildrenRequest
@@ -75,6 +76,8 @@ class PostAdapter(var mList: ArrayList<ChildrenRequest>) : RecyclerView.Adapter<
                     mIUInteractionsListener.onClickImg(mPost.data.thumbnail)
                 }
             }
+        }else{
+            holder.imgPost.setImageDrawable(ContextCompat.getDrawable(holder.imgPost.context, R.drawable.ic_img_placeholder))
         }
 
         with(holder.itemView){

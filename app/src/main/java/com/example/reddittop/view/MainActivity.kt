@@ -112,7 +112,10 @@ class MainActivity : AppCompatActivity(), IUInteractionsListener {
     }
 
     override fun onClickImg(url: String) {
-        Log.d("OVM", "Click on IMG $url")
+        val intentImg = Intent(this, ImageFullScreenActivity::class.java).apply {
+            putExtra(PostDetailFragment.ARG_POST_IMG, url)
+        }
+        startActivity(intentImg)
     }
 
     override fun dataSetChanged(newList: List<ChildrenRequest>) {

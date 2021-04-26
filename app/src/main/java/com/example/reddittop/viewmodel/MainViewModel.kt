@@ -9,7 +9,6 @@ import com.example.reddittop.data.model.listitems.ChildrenRequest
 import com.example.reddittop.data.model.listitems.DataTopRequest
 import com.example.reddittop.usecase.GetAccessTokenUseCase
 import com.example.reddittop.usecase.GetListItemsUseCase
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -94,7 +93,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
         itemsService.children.forEach {
             if (!it.data.media_metadata.isNullOrEmpty()){
                 val valuesList = it.data.media_metadata?.values
-                val urlService = valuesList.elementAt(0).p[0].u
+                val urlService = valuesList.elementAt(0).p[3].u
                 val urlFinal = urlService.replace("amp;", "")
                 it.data.thumbnail = urlFinal
             }
@@ -105,7 +104,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application){
 
     fun updateLiveDataList(mList : List<ChildrenRequest>){
         viewModelScope.launch(Dispatchers.Main) {
-            _mListTop.postValue(mList)
+            _mListTop.value = mList
         }
     }
 
